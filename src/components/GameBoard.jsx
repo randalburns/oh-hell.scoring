@@ -94,8 +94,8 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
               return (
                 <tr
                   key={ri}
-                  className={`round-row ${scored ? 'round-past round-tappable' : ''} ${isCurrent ? 'round-current' : ''}`}
-                  onClick={() => scored && setEditingIdx(ri)}
+                  className={`round-row ${r.bids ? 'round-tappable' : ''} ${scored ? 'round-past' : ''} ${isCurrent ? 'round-current' : ''}`}
+                  onClick={() => r.bids && setEditingIdx(ri)}
                 >
                   <td className="col-round">{ri + 1}</td>
                   <td className="col-cards">{r.cardCount}</td>

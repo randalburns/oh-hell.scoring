@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react'
 export default function Setup({ onStart, onBack }) {
   const [name, setName] = useState('')
   const [numPlayers, setNumPlayers] = useState(4)
-  const [playerNames, setPlayerNames] = useState(Array(10).fill(''))
+  const [playerNames, setPlayerNames] = useState(Array(12).fill(''))
   const [maxCards, setMaxCards] = useState(7)
 
-  const cardLimit = Math.floor(52 / numPlayers)
+  const cardLimit = Math.min(10, Math.floor(52 / numPlayers))
 
   // Clamp maxCards when player count changes
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Setup({ onStart, onBack }) {
           <div className="field-group">
             <label className="field-label">Number of Players</label>
             <div className="num-selector">
-              {[3,4,5,6,7,8,9,10].map(n => (
+              {[3,4,5,6,7,8,9,10,11,12].map(n => (
                 <button key={n} type="button"
                   className={`num-btn ${numPlayers === n ? 'active' : ''}`}
                   onClick={() => setNumPlayers(n)}

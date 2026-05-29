@@ -1,0 +1,101 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --green: #003375;
+  --green-dark: #002855;
+  --green-light: #4a8dc8;
+  --gold: #FDB515;
+  --gold-dark: #c98a00;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --surface2: #f1f3f5;
+  --border: #dee2e6;
+  --text: #212529;
+  --text2: #6c757d;
+  --p1: #1971c2;
+  --p2: #c92a2a;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3 { margin: 0; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.btn-primary:active { background: var(--green-dark); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.btn-secondary:active { background: var(--border); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--green);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+.btn-ghost:active { background: rgba(45,106,79,0.1); }
+
+.btn-danger {
+  background: #c0392b;
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.btn-danger:active { background: #96281b; }
+
+.btn-lg { width: 100%; padding: 16px; font-size: 18px; }

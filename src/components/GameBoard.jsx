@@ -4,10 +4,17 @@ import TrickEntry from './TrickEntry'
 import RoundEdit from './RoundEdit'
 import { roundScore, cumulativeTotals, dealerForRound, bidOrder } from '../gameLogic'
 
-export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit }) {
+export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit, onShare, readOnly = false }) {
   const [showBids, setShowBids] = useState(false)
   const [showTricks, setShowTricks] = useState(false)
   const [editingIdx, setEditingIdx] = useState(null)
+  const [copied, setCopied] = useState(false)
+
+  async function handleShare() {
+    await onShare()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const done = currentRoundIdx >= rounds.length
   const currentRound = !done ? rounds[currentRoundIdx] : null
@@ -52,8 +59,18 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
     <div className="board">
       <header className="board-header">
         <button className="btn-ghost btn-exit" onClick={onExit}>← Exit</button>
-        <span className="board-title">{sessionName}</span>
-        <span className="hand-counter">{done ? 'Done' : `Rd ${currentRoundIdx + 1}/${rounds.length}`}</span>
+        <span className="board-title">
+          {sessionName}
+          {readOnly && <span className="view-badge">view only</span>}
+        </span>
+        <div className="header-right">
+          {!readOnly && (
+            <button className="btn-ghost btn-share" onClick={handleShare}>
+              {copied ? '✓' : '↗'} {copied ? 'Copied' : 'Share'}
+            </button>
+          )}
+          <span className="hand-counter">{done ? 'Done' : `Rd ${currentRoundIdx + 1}/${rounds.length}`}</span>
+        </div>
       </header>
 
       {/* Totals bar */}
@@ -94,8 +111,8 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
               return (
                 <tr
                   key={ri}
-                  className={`round-row ${r.bids ? 'round-tappable' : ''} ${scored ? 'round-past' : ''} ${isCurrent ? 'round-current' : ''}`}
-                  onClick={() => r.bids && setEditingIdx(ri)}
+                  className={`round-row ${r.bids && !readOnly ? 'round-tappable' : ''} ${scored ? 'round-past' : ''} ${isCurrent ? 'round-current' : ''}`}
+                  onClick={() => r.bids && !readOnly && setEditingIdx(ri)}
                 >
                   <td className="col-round">{ri + 1}</td>
                   <td className="col-cards">{r.cardCount}</td>
@@ -139,7 +156,7 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
 
       <div style={{ height: 88 }} />
 
-      {!done && (
+      {!done && !readOnly && (
         <div className="bottom-bar">
           <div className="dealer-badge">Dealer: {players[currentDealer]}</div>
           {!bidsLocked ? (
@@ -177,7 +194,7 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
         />
       )}
 
-      {editingIdx !== null && (
+      {editingIdx !== null && !readOnly && (
         <RoundEdit
           round={rounds[editingIdx]}
           players={players}

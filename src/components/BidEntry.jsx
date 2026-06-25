@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef, Fragment } from 'react'
 import { useBidVoice } from '../useVoiceInput'
 
 export default function BidEntry({ players, playerOrder, dealerIdx, cardCount, onConfirm, onCancel }) {
@@ -14,8 +14,14 @@ export default function BidEntry({ players, playerOrder, dealerIdx, cardCount, o
   const allFilled = parsed.every(b => b !== null && !isNaN(b) && b >= 0 && b <= cardCount)
   const bidSum = parsed.reduce((s, b) => s + (b ?? 0), 0)
 
-  const nonDealerSum = playerOrder.slice(0, -1).reduce((s, pi) => s + (parsed[pi] ?? 0), 0)
+  const inputRefs = useRef([])
+
+  const nonDealerOrder = playerOrder.slice(0, -1)
+  const nonDealerSum = nonDealerOrder.reduce((s, pi) => s + (parsed[pi] ?? 0), 0)
   const forbidden = cardCount - nonDealerSum
+  const nonDealerAllFilled = nonDealerOrder.every(pi => {
+    const b = parsed[pi]; return b !== null && !isNaN(b) && b >= 0 && b <= cardCount
+  })
   const dealerParsed = parsed[dealerIdx]
   const dealerBlocked = dealerParsed !== null && !isNaN(dealerParsed) && dealerParsed === forbidden
 
@@ -74,20 +80,37 @@ export default function BidEntry({ players, playerOrder, dealerIdx, cardCount, o
             const isDealer = pi === dealerIdx
             const isForbidden = isDealer && parsed[pi] !== null && !isNaN(parsed[pi]) && parsed[pi] === forbidden
             return (
-              <div key={pi} className={`bid-row ${isDealer ? 'bid-row-dealer' : ''}`}>
-                <span className="bid-player">
-                  {players[pi]}
-                  {isDealer && <span className="dealer-tag">D</span>}
-                </span>
-                <input
-                  className={`bid-input ${isForbidden ? 'bid-input-error' : ''}`}
-                  type="number" inputMode="numeric" min="0" max={cardCount}
-                  value={bids[pi]} onChange={e => setBid(pi, e.target.value)}
-                  placeholder="–"
-                  autoFocus={orderPos === 0}
-                />
-                {isForbidden && <span className="bid-error-msg">Forbidden! ({forbidden})</span>}
-              </div>
+              <Fragment key={pi}>
+                {isDealer && nonDealerAllFilled && (
+                  <div className="dealer-bid-hint">
+                    {nonDealerSum} trick{nonDealerSum !== 1 ? 's' : ''} bid
+                    {forbidden >= 0 && forbidden <= cardCount
+                      ? ` — no ${forbidden}`
+                      : ' — any bid OK'}
+                  </div>
+                )}
+                <div className={`bid-row ${isDealer ? 'bid-row-dealer' : ''}`}>
+                  <span className="bid-player">
+                    {players[pi]}
+                    {isDealer && <span className="dealer-tag">D</span>}
+                  </span>
+                  <input
+                    ref={el => inputRefs.current[orderPos] = el}
+                    className={`bid-input ${isForbidden ? 'bid-input-error' : ''}`}
+                    type="number" inputMode="numeric" min="0" max={cardCount}
+                    value={bids[pi]} onChange={e => setBid(pi, e.target.value)}
+                    placeholder="–"
+                    autoFocus={orderPos === 0}
+                    onKeyDown={e => {
+                      if (e.key === 'Tab' && !e.shiftKey) {
+                        const next = inputRefs.current[orderPos + 1]
+                        if (next) { e.preventDefault(); next.focus() }
+                      }
+                    }}
+                  />
+                  {isForbidden && <span className="bid-error-msg">No {forbidden}!</span>}
+                </div>
+              </Fragment>
             )
           })}
         </div>

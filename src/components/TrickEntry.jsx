@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { roundScore } from '../gameLogic'
 import { useTrickVoice } from '../useVoiceInput'
 
 export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount, bids, onConfirm, onCancel }) {
   const [tricks, setTricks] = useState(Array(players.length).fill(''))
+  const inputRefs = useRef([])
 
   function setTrick(pi, val) {
     const next = [...tricks]
@@ -67,7 +68,7 @@ export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount,
         </div>
 
         <div className="bid-grid">
-          {playerOrder.map(pi => {
+          {playerOrder.map((pi, orderPos) => {
             const isDealer = pi === dealerIdx
             const t = parsed[pi]
             const score = t !== null && !isNaN(t) ? roundScore(bids[pi], t) : null
@@ -82,10 +83,17 @@ export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount,
                   <span className="bid-label">bid {bids[pi]}</span>
                 </div>
                 <input
+                  ref={el => inputRefs.current[orderPos] = el}
                   className="bid-input"
                   type="number" inputMode="numeric" min="0" max={cardCount}
                   value={tricks[pi]} onChange={e => setTrick(pi, e.target.value)}
                   placeholder="–"
+                  onKeyDown={e => {
+                    if (e.key === 'Tab' && !e.shiftKey) {
+                      const next = inputRefs.current[orderPos + 1]
+                      if (next) { e.preventDefault(); next.focus() }
+                    }
+                  }}
                 />
                 {score !== null && (
                   <span className={`trick-score ${made ? 'made' : 'missed'}`}>

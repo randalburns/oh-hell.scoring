@@ -11,13 +11,18 @@ export default function RoundEdit({ round, players, playerOrder, dealerIdx, onSa
   const parsedBids = bids.map(b => b === '' ? null : parseInt(b))
   const parsedTricks = tricks.map(t => t === '' ? null : parseInt(t))
   const cardCount = round.cardCount
+  const tricksAllEmpty = tricks.every(t => t === '')
+  const tricksAllFilled = tricks.every(t => t !== '')
+  const tricksPartial = !tricksAllEmpty && !tricksAllFilled
   const trickSum = parsedTricks.reduce((s, t) => s + (t ?? 0), 0)
   const bidsOk = parsedBids.every(b => b !== null && !isNaN(b) && b >= 0 && b <= cardCount)
-  const tricksOk = parsedTricks.every(t => t !== null && !isNaN(t) && t >= 0) && trickSum === cardCount
+  const tricksOk = tricksAllFilled && parsedTricks.every(t => !isNaN(t) && t >= 0) && trickSum === cardCount
+  const canSave = bidsOk && (tricksAllEmpty || tricksOk)
+  const saveLabel = tricksAllEmpty ? 'Save Bids' : 'Save'
 
   function handleSave() {
-    if (!bidsOk || !tricksOk) return
-    onSave(parsedBids, parsedTricks)
+    if (!canSave) return
+    onSave(parsedBids, tricksAllEmpty ? null : parsedTricks)
   }
 
   return (
@@ -53,12 +58,15 @@ export default function RoundEdit({ round, players, playerOrder, dealerIdx, onSa
             )
           })}
         </div>
-        {!tricksOk && parsedTricks.every(t => t !== null && !isNaN(t)) && (
+        {tricksPartial && (
+          <div className="bid-summary bid-summary-error">Fill in all tricks or leave them all empty</div>
+        )}
+        {tricksAllFilled && !tricksOk && (
           <div className="bid-summary bid-summary-error">Tricks must sum to {cardCount} (got {trickSum})</div>
         )}
         <div className="sheet-actions">
           <button className="btn-secondary" onClick={onCancel}>Cancel</button>
-          <button className="btn-primary" disabled={!bidsOk || !tricksOk} onClick={handleSave}>Save</button>
+          <button className="btn-primary" disabled={!canSave} onClick={handleSave}>{saveLabel}</button>
         </div>
       </div>
     </>

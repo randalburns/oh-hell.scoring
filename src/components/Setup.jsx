@@ -5,6 +5,7 @@ export default function Setup({ onStart, onBack }) {
   const [numPlayers, setNumPlayers] = useState(4)
   const [playerNames, setPlayerNames] = useState(Array(12).fill(''))
   const [maxCards, setMaxCards] = useState(7)
+  const [downOnly, setDownOnly] = useState(false)
 
   const cardLimit = Math.min(10, Math.floor(52 / numPlayers))
 
@@ -24,7 +25,7 @@ export default function Setup({ onStart, onBack }) {
     const gameName = name.trim() || `Game ${new Date().toLocaleDateString()}`
     const filled = playerNames.slice(0, numPlayers).map(n => n.trim()).filter(n => n.length > 0)
     const plrs = filled.length >= 2 ? filled : playerNames.slice(0, numPlayers).map((n, i) => n.trim() || `Player ${i + 1}`)
-    onStart(gameName, plrs, maxCards)
+    onStart(gameName, plrs, maxCards, downOnly)
   }
 
   return (
@@ -76,7 +77,20 @@ export default function Setup({ onStart, onBack }) {
               })}
             </div>
             <div className="field-hint">
-              Max {cardLimit} with {numPlayers} players · {2 * maxCards - 1} rounds total
+              Max {cardLimit} with {numPlayers} players
+            </div>
+          </div>
+
+          <div className="field-group">
+            <label className="field-label">Format</label>
+            <div className="num-selector">
+              <button type="button" className={`num-btn ${!downOnly ? 'active' : ''}`}
+                onClick={() => setDownOnly(false)}>Down &amp; Up</button>
+              <button type="button" className={`num-btn ${downOnly ? 'active' : ''}`}
+                onClick={() => setDownOnly(true)}>Down Only</button>
+            </div>
+            <div className="field-hint">
+              {downOnly ? `${maxCards} rounds (${maxCards} → 1)` : `${2 * maxCards - 1} rounds (${maxCards} → 1 → ${maxCards})`}
             </div>
           </div>
 

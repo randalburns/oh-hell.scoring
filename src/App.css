@@ -135,6 +135,15 @@
 }
 .total-cell:last-child { border-right: none; }
 .total-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.total-name-editable { cursor: pointer; }
+.total-name-editable:active { opacity: 0.6; }
+.name-edit-input {
+  background: rgba(255,255,255,0.15); border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.3px; text-align: center; outline: none;
+  width: 100%; padding: 1px 2px;
+}
 .total-score { font-size: 22px; font-weight: 800; color: #fff; }
 .total-winner .total-score { color: var(--gold); }
 .total-winner .total-name { color: var(--gold); }

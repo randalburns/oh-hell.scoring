@@ -66,14 +66,20 @@ function App() {
     await navigator.clipboard.writeText(url)
   }
 
-  function startNew(name, plrs, mc) {
+  function startNew(name, plrs, mc, downOnly = false) {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-    const rds = buildRounds(mc)
+    const rds = buildRounds(mc, downOnly)
     liveIdRef.current = null
     setActiveId(id); setSessionName(name); setPlayers(plrs)
     setMaxCards(mc); setRounds(rds); setCurrentRoundIdx(0)
     persist(id, name, plrs, mc, rds, 0)
     setScreen('game')
+  }
+
+  function renamePlayer(idx, newName) {
+    const newPlayers = players.map((p, i) => i === idx ? newName : p)
+    setPlayers(newPlayers)
+    persist(activeId, sessionName, newPlayers, maxCards, rounds, currentRoundIdx)
   }
 
   function resumeSession(s) {
@@ -169,6 +175,7 @@ function App() {
       onEditRound={editRound}
       onExit={() => setScreen('home')}
       onShare={handleShare}
+      onRenamePlayer={renamePlayer}
     />
   )
 }

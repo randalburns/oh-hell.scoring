@@ -4,11 +4,25 @@ import TrickEntry from './TrickEntry'
 import RoundEdit from './RoundEdit'
 import { roundScore, cumulativeTotals, dealerForRound, bidOrder } from '../gameLogic'
 
-export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit, onShare, readOnly = false }) {
+export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit, onShare, onRenamePlayer, readOnly = false }) {
   const [showBids, setShowBids] = useState(false)
   const [showTricks, setShowTricks] = useState(false)
   const [editingIdx, setEditingIdx] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [editingNameIdx, setEditingNameIdx] = useState(null)
+  const [editingNameVal, setEditingNameVal] = useState('')
+
+  function startEditName(i) {
+    setEditingNameIdx(i)
+    setEditingNameVal(players[i])
+  }
+
+  function commitName() {
+    const trimmed = editingNameVal.trim()
+    if (trimmed && trimmed !== players[editingNameIdx]) onRenamePlayer(editingNameIdx, trimmed)
+    setEditingNameIdx(null)
+    setEditingNameVal('')
+  }
 
   async function handleShare() {
     await onShare()
@@ -77,7 +91,24 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
       <div className="totals-bar">
         {players.map((p, i) => (
           <div key={i} className={`total-cell ${i === leaderIdx && done ? 'total-winner' : ''}`}>
-            <span className="total-name">{shortNames[i]}</span>
+            {!readOnly && editingNameIdx === i ? (
+              <input
+                className="name-edit-input"
+                value={editingNameVal}
+                onChange={e => setEditingNameVal(e.target.value)}
+                onBlur={commitName}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') commitName()
+                  if (e.key === 'Escape') { setEditingNameIdx(null); setEditingNameVal('') }
+                }}
+                autoFocus
+              />
+            ) : (
+              <span
+                className={`total-name ${!readOnly ? 'total-name-editable' : ''}`}
+                onClick={() => !readOnly && startEditName(i)}
+              >{shortNames[i]}</span>
+            )}
             <span className="total-score">{totals[i]}</span>
           </div>
         ))}

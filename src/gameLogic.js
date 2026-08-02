@@ -9,11 +9,11 @@ export function bidOrder(ri, numPlayers) {
   return Array.from({ length: numPlayers }, (_, i) => (dealer + 1 + i) % numPlayers)
 }
 
-// Build round card-count sequence: N → 1 → N  (valley shape)
-export function buildRounds(maxCards) {
+// Build round card-count sequence: N → 1 → N  (valley) or N → 1 (down only)
+export function buildRounds(maxCards, downOnly = false) {
   const seq = []
   for (let c = maxCards; c >= 1; c--) seq.push(c)
-  for (let c = 2; c <= maxCards; c++) seq.push(c)
+  if (!downOnly) for (let c = 2; c <= maxCards; c++) seq.push(c)
   return seq.map(cardCount => ({ cardCount, bids: null, tricks: null }))
 }
 

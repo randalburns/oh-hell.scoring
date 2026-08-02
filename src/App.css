@@ -135,14 +135,13 @@
 }
 .total-cell:last-child { border-right: none; }
 .total-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.total-name-editable { cursor: pointer; }
-.total-name-editable:active { opacity: 0.6; }
-.name-edit-input {
-  background: rgba(255,255,255,0.15); border: none;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
-  color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.3px; text-align: center; outline: none;
-  width: 100%; padding: 1px 2px;
+.col-player-name-editable { cursor: pointer; }
+.col-player-name-editable:active { background: var(--border); }
+.name-header-input {
+  background: transparent; border: none; border-bottom: 1px solid var(--text2);
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--text); text-align: center; outline: none;
+  width: 100%; padding: 0; font-family: inherit;
 }
 .total-score { font-size: 22px; font-weight: 800; color: #fff; }
 .total-winner .total-score { color: var(--gold); }
@@ -218,6 +217,27 @@
   animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .sheet-tall { max-height: 92svh; overflow-y: auto; }
+.sheet-flex {
+  max-height: 92svh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+.bid-grid-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+.bid-tally { flex-shrink: 0; margin-bottom: 10px; }
+.bid-tally-track {
+  height: 6px; background: var(--surface2); border-radius: 3px;
+  overflow: hidden; margin-bottom: 6px;
+}
+.bid-tally-fill {
+  height: 100%; background: #0f3460; border-radius: 3px;
+  transition: width 0.2s ease;
+}
+.bid-tally-fill.bid-tally-over { background: #c92a2a; }
+.bid-tally-text {
+  font-size: 13px; font-weight: 600; color: var(--text2); text-align: center;
+}
+.bid-tally-text.bid-tally-text-over { color: #c92a2a; }
 @keyframes slideUp {
   from { transform: translateX(-50%) translateY(100%); }
   to { transform: translateX(-50%) translateY(0); }
@@ -271,32 +291,6 @@
   letter-spacing: 0.1px;
 }
 
-/* ── Voice input ──────────────────────────────── */
-.voice-wrap {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 12px; flex-wrap: wrap;
-}
-.voice-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: var(--radius);
-  background: var(--surface2); color: var(--text);
-  font-size: 14px; font-weight: 600; border: 2px solid var(--border);
-  transition: all 0.15s; flex-shrink: 0;
-}
-.voice-btn:active { background: var(--border); }
-.voice-btn.voice-listening {
-  background: #fff0f0; border-color: #c92a2a; color: #c92a2a;
-  animation: pulse 1s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-.voice-icon { font-size: 16px; }
-.voice-hint { font-size: 12px; color: var(--text2); font-style: italic; }
-.voice-status { font-size: 12px; color: var(--text2); }
-.voice-status.voice-active { color: #c92a2a; font-weight: 600; }
-.voice-status.voice-error { color: #c92a2a; }
 
 /* ── Dealer highlights ────────────────────────── */
 .dealer-badge {

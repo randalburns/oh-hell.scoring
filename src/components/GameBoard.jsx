@@ -91,24 +91,7 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
       <div className="totals-bar">
         {players.map((p, i) => (
           <div key={i} className={`total-cell ${i === leaderIdx && done ? 'total-winner' : ''}`}>
-            {!readOnly && editingNameIdx === i ? (
-              <input
-                className="name-edit-input"
-                value={editingNameVal}
-                onChange={e => setEditingNameVal(e.target.value)}
-                onBlur={commitName}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') commitName()
-                  if (e.key === 'Escape') { setEditingNameIdx(null); setEditingNameVal('') }
-                }}
-                autoFocus
-              />
-            ) : (
-              <span
-                className={`total-name ${!readOnly ? 'total-name-editable' : ''}`}
-                onClick={() => !readOnly && startEditName(i)}
-              >{shortNames[i]}</span>
-            )}
+            <span className="total-name">{shortNames[i]}</span>
             <span className="total-score">{totals[i]}</span>
           </div>
         ))}
@@ -122,7 +105,23 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
               <th className="col-round" rowSpan={2}>Rd</th>
               <th className="col-cards" rowSpan={2}>♠</th>
               {players.map((p, i) => (
-                <th key={i} className="col-player-name" colSpan={2}>{shortNames[i]}</th>
+                <th key={i} className={`col-player-name ${!readOnly ? 'col-player-name-editable' : ''}`}
+                  colSpan={2} onClick={() => !readOnly && startEditName(i)}>
+                  {!readOnly && editingNameIdx === i ? (
+                    <input
+                      className="name-header-input"
+                      value={editingNameVal}
+                      onChange={e => setEditingNameVal(e.target.value)}
+                      onBlur={commitName}
+                      onClick={e => e.stopPropagation()}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') commitName()
+                        if (e.key === 'Escape') { setEditingNameIdx(null); setEditingNameVal('') }
+                      }}
+                      autoFocus
+                    />
+                  ) : shortNames[i]}
+                </th>
               ))}
             </tr>
             <tr>

@@ -1,6 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { roundScore } from '../gameLogic'
-import { useTrickVoice } from '../useVoiceInput'
 
 export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount, bids, onConfirm, onCancel }) {
   const [tricks, setTricks] = useState(Array(players.length).fill(''))
@@ -17,20 +16,6 @@ export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount,
   const allFilled = parsed.every(t => t !== null && !isNaN(t) && t >= 0)
   const sumOk = trickSum === cardCount
 
-  const handleVoiceNumbers = useCallback(nums => {
-    const next = Array(players.length).fill('')
-    nums.slice(0, players.length).forEach((n, i) => {
-      if (i < playerOrder.length) next[playerOrder[i]] = String(n)
-    })
-    setTricks(next)
-  }, [players.length, playerOrder])
-
-  const voice = useTrickVoice({ onNumbers: handleVoiceNumbers })
-
-  useEffect(() => {
-    if (allFilled && sumOk && voice.listening) voice.stop()
-  }, [allFilled, sumOk, voice.listening])
-
   function handleConfirm() {
     if (!allFilled || !sumOk) return
     onConfirm(parsed)
@@ -43,29 +28,6 @@ export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount,
         <div className="sheet-handle" />
         <h2 className="sheet-title">Enter Tricks — {cardCount} card{cardCount !== 1 ? 's' : ''}</h2>
         <p className="sheet-subtitle">Total must equal {cardCount}</p>
-
-        <div className="voice-wrap">
-          <button
-            type="button"
-            className={`voice-btn ${voice.listening ? 'voice-listening' : ''}`}
-            onClick={voice.listening ? voice.stop : voice.start}
-          >
-            <span className="voice-icon">{voice.listening ? '⏹' : '🎤'}</span>
-            <span className="voice-label">{voice.listening ? 'Listening…' : 'Voice'}</span>
-          </button>
-          {!voice.listening && !voice.transcript && (
-            <span className="voice-hint">{"Say \"got 3 got 1 got 0\" or just \"3 1 0\" in deal order"}</span>
-          )}
-          {voice.listening && (
-            <span className="voice-status voice-active">Names are ignored — only numbers count</span>
-          )}
-          {voice.transcript && !voice.listening && (
-            <span className="voice-status">Heard: "{voice.transcript}"</span>
-          )}
-          {voice.error && !voice.listening && (
-            <span className="voice-status voice-error">{voice.error}</span>
-          )}
-        </div>
 
         <div className="bid-grid">
           {playerOrder.map((pi, orderPos) => {
@@ -88,6 +50,7 @@ export default function TrickEntry({ players, playerOrder, dealerIdx, cardCount,
                   type="number" inputMode="numeric" min="0" max={cardCount}
                   value={tricks[pi]} onChange={e => setTrick(pi, e.target.value)}
                   placeholder="–"
+                  autoFocus={orderPos === 0}
                   onKeyDown={e => {
                     if (e.key === 'Tab' && !e.shiftKey) {
                       const next = inputRefs.current[orderPos + 1]

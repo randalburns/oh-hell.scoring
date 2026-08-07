@@ -4,13 +4,15 @@ import TrickEntry from './TrickEntry'
 import RoundEdit from './RoundEdit'
 import { roundScore, cumulativeTotals, dealerForRound, bidOrder } from '../gameLogic'
 
-export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit, onShare, onRenamePlayer, readOnly = false }) {
+export default function GameBoard({ players, sessionName, maxCards, rounds, currentRoundIdx, onSubmitBids, onSubmitTricks, onEditRound, onExit, onShare, onRenamePlayer, onRenameGame, readOnly = false }) {
   const [showBids, setShowBids] = useState(false)
   const [showTricks, setShowTricks] = useState(false)
   const [editingIdx, setEditingIdx] = useState(null)
   const [copied, setCopied] = useState(false)
   const [editingNameIdx, setEditingNameIdx] = useState(null)
   const [editingNameVal, setEditingNameVal] = useState('')
+  const [editingGameName, setEditingGameName] = useState(false)
+  const [editingGameVal, setEditingGameVal] = useState('')
 
   function startEditName(i) {
     setEditingNameIdx(i)
@@ -22,6 +24,18 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
     if (trimmed && trimmed !== players[editingNameIdx]) onRenamePlayer(editingNameIdx, trimmed)
     setEditingNameIdx(null)
     setEditingNameVal('')
+  }
+
+  function startEditGame() {
+    setEditingGameVal(sessionName)
+    setEditingGameName(true)
+  }
+
+  function commitGame() {
+    const trimmed = editingGameVal.trim()
+    if (trimmed && trimmed !== sessionName) onRenameGame(trimmed)
+    setEditingGameName(false)
+    setEditingGameVal('')
   }
 
   async function handleShare() {
@@ -73,10 +87,27 @@ export default function GameBoard({ players, sessionName, maxCards, rounds, curr
     <div className="board">
       <header className="board-header">
         <button className="btn-ghost btn-exit" onClick={onExit}>← Exit</button>
-        <span className="board-title">
-          {sessionName}
-          {readOnly && <span className="view-badge">view only</span>}
-        </span>
+        {!readOnly && editingGameName ? (
+          <input
+            className="game-name-input"
+            value={editingGameVal}
+            onChange={e => setEditingGameVal(e.target.value)}
+            onBlur={commitGame}
+            onKeyDown={e => {
+              if (e.key === 'Enter') commitGame()
+              if (e.key === 'Escape') { setEditingGameName(false); setEditingGameVal('') }
+            }}
+            autoFocus
+          />
+        ) : (
+          <span
+            className={`board-title ${!readOnly ? 'board-title-editable' : ''}`}
+            onClick={() => !readOnly && startEditGame()}
+          >
+            {sessionName}
+            {readOnly && <span className="view-badge">view only</span>}
+          </span>
+        )}
         <div className="header-right">
           {!readOnly && (
             <button className="btn-ghost btn-share" onClick={handleShare}>

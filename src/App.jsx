@@ -82,6 +82,11 @@ function App() {
     persist(activeId, sessionName, newPlayers, maxCards, rounds, currentRoundIdx)
   }
 
+  function renameGame(newName) {
+    setSessionName(newName)
+    persist(activeId, newName, players, maxCards, rounds, currentRoundIdx)
+  }
+
   function resumeSession(s) {
     liveIdRef.current = s.liveId || null
     setActiveId(s.id); setSessionName(s.name); setPlayers(s.players)
@@ -176,6 +181,7 @@ function App() {
       onExit={() => setScreen('home')}
       onShare={handleShare}
       onRenamePlayer={renamePlayer}
+      onRenameGame={renameGame}
     />
   )
 }

@@ -134,14 +134,20 @@
   padding: 8px 4px; border-right: 1px solid rgba(255,255,255,0.1);
 }
 .total-cell:last-child { border-right: none; }
-.total-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.total-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .col-player-name-editable { cursor: pointer; }
 .col-player-name-editable:active { background: var(--border); }
+.col-player-name { min-width: 52px; text-transform: none !important; }
 .name-header-input {
   background: transparent; border: none; border-bottom: 1px solid var(--text2);
-  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
-  color: var(--text); text-align: center; outline: none;
-  width: 100%; padding: 0; font-family: inherit;
+  font-size: 11px; font-weight: 700; color: var(--text); text-align: center;
+  outline: none; width: 100%; padding: 0; font-family: inherit;
+}
+.board-title-editable { cursor: pointer; }
+.game-name-input {
+  background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.5);
+  color: #fff; font-size: 17px; font-weight: 700; text-align: center;
+  outline: none; width: 160px; font-family: inherit; padding: 0 2px;
 }
 .total-score { font-size: 22px; font-weight: 800; color: #fff; }
 .total-winner .total-score { color: var(--gold); }
